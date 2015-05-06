@@ -30,7 +30,7 @@
 #define FREENECT_VIDEO_RGB_SIZE   (FREENECT_FRAME_PIX*3)
 
 
-
+//blub
 
 IplImage* depthimg = 0;
 IplImage* rgbimg = 0;
