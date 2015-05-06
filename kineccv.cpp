@@ -55,6 +55,21 @@ void depth_cb(freenect_device *dev, void *depth, uint32_t timestamp)
 
 }
 
+
+    // callback for rgbimage, called by libfreenect
+
+    // void rgb_cb(freenect_device *dev, void *rgb, uint32_t timestamp)
+    // {
+    //
+    //
+    //         // lock mutex for opencv rgb image
+    //         pthread_mutex_lock( &mutex_rgb );
+    //         memcpy(rgbimg->imageData, rgb, FREENECT_VIDEO_RGB_SIZE);
+    //         // unlock mutex
+    //         pthread_mutex_unlock( &mutex_rgb );
+    // }
+    //
+
 /*
  * thread for displaying the opencv content
  */
