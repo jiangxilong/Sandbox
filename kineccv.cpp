@@ -46,18 +46,16 @@ void depth_cb(freenect_device *dev, void *depth, uint32_t timestamp){
     // unlock mutex
     pthread_mutex_unlock( &mutex_depth );
 }
-
-    // void rgb_cb(freenect_device *dev, void *rgb, uint32_t timestamp)
-    // {
-    //
-    //
-    //         // lock mutex for opencv rgb image
-    //         pthread_mutex_lock( &mutex_rgb );
-    //         memcpy(rgbimg->imageData, rgb, FREENECT_VIDEO_RGB_SIZE);
-    //         // unlock mutex
-    //         pthread_mutex_unlock( &mutex_rgb );
-    // }
-    //
+/*
+void rgb_cb(freenect_device *dev, void *rgb, uint32_t timestamp)
+{
+    // lock mutex for opencv rgb image
+    pthread_mutex_lock( &mutex_rgb );
+    memcpy(rgbimg->imageData, rgb, FREENECT_VIDEO_RGB_SIZE);
+    // unlock mutex
+    pthread_mutex_unlock( &mutex_rgb );
+}
+*/
 
 /*
  * thread for displaying the opencv content
@@ -74,20 +72,20 @@ void *cv_threadfunc (void *ptr) {
         //lock mutex for depth image
         pthread_mutex_lock( &mutex_depth );
         // show image to window
-        cvCvtColor(depthimg,depthimg,CV_GRAY2BGR);
-        //cvCvtColor(tempimg,tempimg,CV_HSV2BGR);
-        cvShowImage(FREENECTOPENCV_WINDOW_D,depthimg);
+        cvCvtColor(depthimg,tempimg,CV_GRAY2BGR);
+        cvCvtColor(tempimg,tempimg,CV_HSV2BGR);
+        cvShowImage(FREENECTOPENCV_WINDOW_D,tempimg);
         //unlock mutex for depth image
         pthread_mutex_unlock( &mutex_depth );
-
-        /*//lock mutex for rgb image
+/*
+        //lock mutex for rgb image
         pthread_mutex_lock( &mutex_rgb );
         // show image to window
         cvCvtColor(rgbimg,tempimg,CV_BGR2RGB);
         cvShowImage(FREENECTOPENCV_WINDOW_N, tempimg);
         //unlock mutex
-        pthread_mutex_unlock( &mutex_rgb );*/
-
+        pthread_mutex_unlock( &mutex_rgb );
+*/
         // wait for quit key
         if( cvWaitKey( 15 )==27 ){
             break;
@@ -130,7 +128,7 @@ int main(int argc, char **argv){
     printf("init done\n");
 
     freenect_start_depth(f_dev);
-    //freenect_start_video(f_dev);
+    freenect_start_video(f_dev);
 
     while(!die && freenect_process_events(f_ctx) >= 0 );
 

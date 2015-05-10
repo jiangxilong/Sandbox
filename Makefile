@@ -13,4 +13,4 @@ kineccv.o: kineccv.cpp
 	$(CC) $(CFLAGS)  $(LIBS) -c $<
 
 clean:
-	rm -f $(OBJS) $(TARGET)
+	rm -f $(OBJS) $(PROG)
