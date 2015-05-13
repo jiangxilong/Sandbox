@@ -194,45 +194,27 @@ class MyFreenectDevice : public Freenect::FreenectDevice {
 		std::vector<uint8_t> m_buffer_depth;
 		std::vector<uint8_t> m_buffer_rgb;
 		std::vector<uint16_t> m_gamma;
+        bool m_new_rgb_frame;
+		bool m_new_depth_frame;
 		Mat depthMat;
 		Mat rgbMat;
 		Mat ownMat;
 		myMutex m_rgb_mutex;
 		myMutex m_depth_mutex;
-		bool m_new_rgb_frame;
-		bool m_new_depth_frame;
 };
 
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
 
         bool die(false);
 
-        Mat depthMat(Size(640,480),CV_16UC1);
-        Mat depthf  (Size(640,480),CV_8UC1);
+        Mat depthMat(Size(640,480), CV_16UC1);
+        Mat depthf(Size(640,480), CV_8UC1);
         Mat rgbMat(Size(640,480),CV_8UC3,Scalar(0));
         Mat ownMat(Size(640,480),CV_8UC3,Scalar(0));
 
         Freenect::Freenect freenect;
         MyFreenectDevice& device = freenect.createDevice<MyFreenectDevice>(0);
-
-
-        //interpolation & inpainting
-        Mat _tmp,_tmp1; //minimum observed value is ~440. so shift a bit
-        Mat(depthMat - 400.0).convertTo(_tmp1,CV_64FC1);
-
-        Point minLoc; double minval,maxval;
-        minMaxLoc(_tmp1, &minval, &maxval, NULL, NULL);
-        _tmp1.convertTo(depthf, CV_8UC1, 255.0/maxval);  //linear interpolation
-
-                   //use a smaller version of the image
-        Mat small_depthf; resize(depthf,small_depthf,Size(),0.2,0.2);
-                    //inpaint only the "unknown" pixels
-        cv::inpaint(small_depthf,(small_depthf == 255),_tmp1,5.0,INPAINT_TELEA);
-
-        resize(_tmp1, _tmp, depthf.size());
-        _tmp.copyTo(depthf, (depthf == 255));  //add the original signal back over the inpaint
 
         device.startVideo();
         device.startDepth();
@@ -240,15 +222,31 @@ int main(int argc, char **argv)
         while (!die) {
             device.getVideo(rgbMat);
             device.getDepth(depthMat);
-            depthMat.convertTo(depthf, CV_8UC1, 255.0/2048.0);
+            //interpolation & inpainting
+            Mat _tmp,_tmp1; //minimum observed value is ~440. so shift a bit
+            Mat(depthMat - 400.0).convertTo(_tmp1,CV_64FC1);
+
+            Point minLoc; double minval,maxval;
+            minMaxLoc(_tmp1, &minval, &maxval, NULL, NULL);
+            _tmp1.convertTo(depthf, CV_8UC1, 255.0/maxval);  //linear interpolation
+
+            //use a smaller version of the image
+            Mat small_depthf; resize(depthf,small_depthf,Size(),0.2,0.2);
+            //inpaint only the "unknown" pixels
+            cv::inpaint(small_depthf,(small_depthf == 255),_tmp1,5.0,INPAINT_TELEA);
+
+            resize(_tmp1, _tmp, depthf.size());
+            _tmp.copyTo(depthf, (depthf == 255));  //add the original signal back over the inpaint
             cv::imshow("depth",depthf);
             char k = cvWaitKey(5);
             if( k == 27 ){
                 break;
             }
+
         }
 
         device.stopVideo();
         device.stopDepth();
+        return 0;
 
 }
