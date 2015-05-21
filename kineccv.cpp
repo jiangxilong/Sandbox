@@ -222,9 +222,12 @@ int main(int argc, char **argv) {
         while (!die) {
             device.getVideo(rgbMat);
             device.getDepth(depthMat);
+
+            //cvSetCaptureProperty(depthMat, CV_CAP_PROP_FPS, 15);
+
             //interpolation & inpainting
             Mat _tmp,_tmp1; //minimum observed value is ~440. so shift a bit
-            Mat(depthMat - 400.0).convertTo(_tmp1,CV_64FC1);
+            Mat(depthMat - 200.0).convertTo(_tmp1,CV_64FC1);
 
             Point minLoc; double minval,maxval;
             minMaxLoc(_tmp1, &minval, &maxval, NULL, NULL);
