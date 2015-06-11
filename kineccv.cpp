@@ -159,9 +159,9 @@ class MyFreenectDevice : public Freenect::FreenectDevice {
 
 		// Do not call directly even in child
 		void DepthCallback(void* _depth, uint32_t timestamp) {
-			
+
 			//reduziert die Framerate
-			usleep(250*1000);
+			//usleep(250*1000);
 
 			//std::cout << "Depth callback" << std::endl;
 			m_depth_mutex.lock();
