@@ -251,7 +251,7 @@ int main(int argc, char **argv) {
 
             //add color to grey
             cv::cvtColor(depthf, tempf, CV_GRAY2BGR);
-            cv::cvtColor(tempf, tempf, CV_HSV2BGR);
+            cv::cvtColor(tempf, tempf, CV_HSV2RGB);
 
             cv::imshow("depth",tempf);
             char k = cvWaitKey(5);
