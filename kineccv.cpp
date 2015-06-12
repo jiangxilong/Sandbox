@@ -216,6 +216,7 @@ int main(int argc, char **argv) {
 
         Mat depthMat(Size(640,480), CV_16UC1);
         Mat depthf(Size(640,480), CV_8UC1);
+        Mat tempf(Size(640,480), CV_8UC3);
         Mat rgbMat(Size(640,480),CV_8UC3,Scalar(0));
         Mat ownMat(Size(640,480),CV_8UC3,Scalar(0));
 
@@ -237,16 +238,22 @@ int main(int argc, char **argv) {
 
             Point minLoc; double minval,maxval;
             minMaxLoc(_tmp1, &minval, &maxval, NULL, NULL);
-            _tmp1.convertTo(depthf, CV_8UC1, 255.0/maxval);  //linear interpolation
+            //cout << maxval << endl;
+            _tmp1.convertTo(depthf, CV_8UC1, 0.28, 0);  //linear interpolation
 
             //use a smaller version of the image
-            Mat small_depthf; resize(depthf,small_depthf,Size(),0.2,0.2);
+            //Mat small_depthf; resize(depthf,small_depthf,Size(),0.2,0.2);
             //inpaint only the "unknown" pixels
-            cv::inpaint(small_depthf,(small_depthf == 255),_tmp1,5.0,INPAINT_TELEA);
+            cv::inpaint(depthf,(depthf == 255),_tmp1,5.0,INPAINT_TELEA);
 
             resize(_tmp1, _tmp, depthf.size());
             _tmp.copyTo(depthf, (depthf == 255));  //add the original signal back over the inpaint
-            cv::imshow("depth",depthf);
+
+            //add color to grey
+            cv::cvtColor(depthf, tempf, CV_GRAY2BGR);
+            cv::cvtColor(tempf, tempf, CV_HSV2BGR);
+
+            cv::imshow("depth",tempf);
             char k = cvWaitKey(5);
             if( k == 27 ){
                 break;
