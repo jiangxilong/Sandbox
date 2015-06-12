@@ -4,6 +4,8 @@
 #include <cmath>
 #include <cstdio>
 #include <string>
+#include <algorithm>
+#include <iterator>
 
 #include <unistd.h>
 
@@ -209,6 +211,24 @@ class MyFreenectDevice : public Freenect::FreenectDevice {
 		myMutex m_depth_mutex;
 };
 
+void changeIntens(Mat &pic){
+    int nums[25] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25};
+    for(int i = 0; i < pic.rows; i++){
+        for(int j = 0; j < pic.cols; j++){
+            Scalar intensity = pic.at<uchar>(i, j);
+            if(intensity[0] != 0){
+                //cout << "x: " << j << " y: " << i << " i: " << intensity[0] << endl;
+                double temp = intensity[0] / 10;
+                for(int k = 0; k < 25; k++){
+                    if(temp == nums[k]){
+                        pic.at<uchar>(i,j) = 0;
+                    }
+                }
+            }
+        }
+    }
+}
+
 
 int main(int argc, char **argv) {
 
@@ -248,6 +268,8 @@ int main(int argc, char **argv) {
 
             resize(_tmp1, _tmp, depthf.size());
             _tmp.copyTo(depthf, (depthf == 255));  //add the original signal back over the inpaint
+
+            changeIntens(depthf);
 
             //add color to grey
             cv::cvtColor(depthf, tempf, CV_GRAY2BGR);
