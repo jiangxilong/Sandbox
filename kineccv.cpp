@@ -216,6 +216,7 @@ void changeIntens(Mat &pic){
     for(int i = 0; i < pic.rows; i++){
         for(int j = 0; j < pic.cols; j++){
             Scalar intensity = pic.at<uchar>(i, j);
+            Scalar intensityM1 = pic.at<uchar>(i, j-1);
             if(intensity[0] != 0){
                 //cout << "x: " << j << " y: " << i << " i: " << intensity[0] << endl;
                 double temp = intensity[0] / 10;
