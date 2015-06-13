@@ -216,7 +216,7 @@ void changeIntens(Mat &pic){
     for(int i = 0; i < pic.rows; i++){
         for(int j = 0; j < pic.cols; j++){
             Scalar intensity = pic.at<uchar>(i, j);
-            Scalar intensityM1 = pic.at<uchar>(i, j-1);
+            //Scalar intensityM1 = pic.at<uchar>(i, j-1);
             if(intensity[0] != 0){
                 //cout << "x: " << j << " y: " << i << " i: " << intensity[0] << endl;
                 double temp = intensity[0] / 10;
@@ -226,6 +226,18 @@ void changeIntens(Mat &pic){
                     }
                 }
             }
+            //here we can change the range of colors
+            /*
+            intensity = pic.at<uchar>(i, j);
+            if(intensity[0] != 0){
+                int higher = intensity[0] * 1.5;
+                if(higher > 255){
+                    higher = 255;
+                }
+                pic.at<uchar>(i,j) = higher;
+                //cout << "x: " << j << " y: " << i << " intensity: " << intensity[0] << " higher: " << higher << endl;
+            }
+            */
         }
     }
 }
